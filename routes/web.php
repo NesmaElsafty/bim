@@ -22,7 +22,7 @@ Route::get('/', function () {
 // })->middleware(['auth'])->name('dashboard');
 
 Route::group(['middleware'=>['auth']], function () {
-    Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+    Route::get('/dashboard', 'DashboardController@index')->name('home');
 });
 
 require __DIR__.'/auth.php';
