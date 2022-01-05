@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\API;
-use App\Models\SubCategory;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Validator;
 use App\Models\Transaction;
 use App\Models\Category;
+use App\Models\SubCategory;
+use App\Models\User;
 use App\Http\Resources\TransactionResource;
 
 class TransactionController extends Controller
@@ -73,14 +74,32 @@ class TransactionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(transaction $transaction)
     {
-        //
-        $transaction = Transaction::find($id);
-        if (is_null($Transaction)) {
+        $category = Category::find($transaction->category_id);
+        $subCategory = SubCategory::find($transaction->sub_category_id);
+        
+        $payer = User::find($transaction->user_id);
+
+        if (is_null($transaction)) {
             return response()->json('Data not found', 404); 
         }
-        return response()->json([new TransactionResource($transaction)]);
+            
+        $data = array(
+            'id' => $transaction->id,
+            'name' => $transaction->name,
+            'category' => $category->name,
+            'subCategory' => $subCategory ? $subCategory->name : 'No Sub Category for this transaction',
+            'payer' => $payer->name,
+            'amount' => $transaction->amount,
+            'due_date' => $transaction->due_date,
+            'status' => $transaction->status,
+            'created_at' => $transaction->created_at,
+            'updated_at' => $transaction->updated_at,
+        );
+        $dataa = json_encode($data);
+        
+        return $dataa;
     }
 
     /**
@@ -93,22 +112,22 @@ class TransactionController extends Controller
     public function update(Request $request, $id)
     {
         //
-        $validator = Validator::make($request->all(),[
-            'name' => 'required|string|max:255',
-            'category_id'=>'required',
-            'user_id'=>'required',
-            'amount'=>'required',
-            'due_date'=>'required',
-        ]);
+        // $validator = Validator::make($request->all(),[
+        //     'name' => 'required|string|max:255',
+        //     'category_id'=>'required',
+        //     'user_id'=>'required',
+        //     'amount'=>'required',
+        //     'due_date'=>'required',
+        // ]);
 
-        if($validator->fails()){
-            return response()->json($validator->errors());       
-        }
+        // if($validator->fails()){
+        //     return response()->json($validator->errors());       
+        // }
 
-        $transaction->name = $request->name;
-        $transaction->save();
+        // $transaction->name = $request->name;
+        // $transaction->save();
         
-        return response()->json(['Transaction updated successfully.', new TransactionResource($transaction)]);
+        // return response()->json(['Transaction updated successfully.', new TransactionResource($transaction)]);
     }
 
     /**
@@ -117,10 +136,10 @@ class TransactionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(transaction $transaction)
     {
         //
-        $id->delete();
+        $transaction->delete();
 
         return response()->json('Transaction deleted successfully');
     }
