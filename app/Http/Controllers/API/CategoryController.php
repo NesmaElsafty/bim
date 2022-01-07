@@ -5,6 +5,7 @@ use App\Models\Category;
 use App\Http\Resources\CategoryResource;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Validator;
 
 class CategoryController extends Controller
 {
@@ -40,7 +41,6 @@ class CategoryController extends Controller
 
         $category = Category::create([
             'name' => $request->name,
-            'category_id' => $request->category_id
          ]);
         
         return response()->json(['category created successfully.', new categoryResource($category)]);

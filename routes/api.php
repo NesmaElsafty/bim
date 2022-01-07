@@ -30,3 +30,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::resource('subCategories', SubCategoryController::class);
 Route::resource('transactions', TransactionController::class);
+Route::resource('payments', PaymentController::class);
